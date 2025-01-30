@@ -1,0 +1,97 @@
+{% extends "base.html" %}
+{% load static %}
+{% block metadescription %}
+    {{ product.description|truncatewords:155 }}
+{% endblock %}
+{% block title %}
+    {{ product.name }} - Sayali'S Kitchen
+{% endblock %}
+{% block content %}
+    <div class="row my_prod_row_class bg-white text-dark">
+        <div class="mx-auto">
+            <p>
+                <a href="{% url 'shop:all_products' %}" class="text-danger">Home</a> | 
+                <a href="{{product.type.get_url}}" class="text-danger">{{product.type}}</a> |
+                <span class="text-dark">{{product.name}}</span>
+            </p>
+        </div>
+        <div class="container">
+            <br>
+            <div class="row">
+                <div class="col-12 col-sm-12 col-md-12 col-lg-6 text-center">
+                    <div style="min-width: 18rem;">
+                        <img src="{{product.image.url}}" alt="{{product.name}}" style="border: 2px solid yellow;">
+                    </div>
+                </div>
+                <div class="col-12 col-sm-12 col-md-12 col-lg-6 text-dark">
+                    <div>
+                        <h1 class="my_prod_title">{{product.name}}</h1>
+                        <p>€{{product.price}}</p>
+                        <p class="my_title">Product Description</p>
+
+                        <hr style="border-color: red;">
+                        <h2 class="subtitle">Reviews</h2>
+
+                        <div class="reviews">
+                            {% for review in product.productreview_set.all %}
+                                <div class="notification bg-light text-dark p-3 my-2" style="border: 1px solid yellow;">
+                                    <p>
+                                        <strong>Date: </strong>{{ review.date_added|date:"Y-m-d" }},
+                                        <strong>Stars: </strong>{{ review.stars }}
+                                    </p>
+                                    <p>{{ review.content }}</p>
+                                </div>
+                            {% empty %}
+                                <div class="notification text-danger">
+                                    No review yet...
+                                </div>
+                            {% endfor %}
+                        </div>
+
+                        <div class="notification col-12 col-sm-12 col-md-12 col-lg-6 text-center">
+                            {% if request.user.is_authenticated %}
+                                <form method='post' action=".">
+                                    {% csrf_token %}
+                                    <div class="field">
+                                        <label class="text-dark">Stars</label>
+                                        <div class="control">
+                                            <select name="stars" id="" class="form-select">
+                                                <option value="1">1</option>
+                                                <option value="2">2</option>
+                                                <option value="3" selected>3</option>
+                                                <option value="4">4</option>
+                                                <option value="5">5</option>
+                                            </select>
+                                        </div>
+                                        <div class="field">
+                                            <label class="text-dark">Content</label>
+                                            <div class="control">
+                                                <textarea class="form-control" name="content" id="" cols="30" rows="10"></textarea>
+                                            </div>
+                                        </div>
+                                        <div class="field mt-3">
+                                            <div class="control">
+                                                <button class="btn btn-danger">Submit</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </form>
+                            {% else %}
+                                <p class="text-danger">Please sign-in to add a review</p>
+                            {% endif %}
+                        </div>
+
+                        <p class="text-justify my_prod_text">{{product.description}}</p>
+                        {% if product.stock == 0 %}
+                            <p class="text-justify my_prod_text text-danger"><b>Sorry, Out of Stock</b></p>
+                        {% else %}
+                            <a class="btn btn-success" href="{% url 'cart:add_cart' product.id %}">
+                                Add to Cart <i class="fa fa-shopping-cart"></i>
+                            </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

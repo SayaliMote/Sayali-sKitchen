@@ -1,0 +1,147 @@
+<style>
+  /* Square Tile Styling */
+.tile-card {
+    width: 100%; /* Take full width of the column */
+    padding-top: 100%; /* Maintain square aspect ratio */
+    position: relative; /* Allows absolute positioning of the card body */
+    background-size: cover; /* Cover the entire card with the background image */
+    background-position: center; /* Center the image */
+    border: none; /* Remove default card border */
+    border-radius: 10px; /* Optional: Rounded corners */
+    overflow: hidden; /* Ensure no content overflows */
+}
+
+/* Ensure the card body is positioned inside the tile */
+.tile-card .card-body {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 10px;
+    background: rgba(255, 255, 255, 0.7); /* Semi-transparent background for the button area */
+}
+
+</style>
+{% extends "base.html" %}
+{% load static %}
+{% block metadescription %}
+    {% if type %}
+        {{ type.description|truncatewords:155 }}
+    {% else %}
+        Welcome to Sayali's Kitchen - Great food at your fingertips
+    {% endif %}
+{% endblock %}
+{% block title %}
+    {% if type %}
+        {{ type.name }} - Sayali's Kitchen
+    {% else %}
+        Sayali's Kitchen - Something for everyone
+    {% endif %}
+{% endblock %}
+{% block content %}
+    <!--Breadcrumb navigation-->
+    {% if type %}
+ 
+        <div class="row my_row_class bg-white text-dark">
+            <div class="mx-auto">
+                <p>
+                    <a href="{% url 'shop:all_products' %}" class="text-danger">Our food Collection</a> | 
+                    <span class="text-dark">{{ type.name }}</span>
+                </p>
+            </div>
+        </div>
+    {% endif %}
+    <div>
+        {% if type %}
+            <img class="my_image" src="{{ type.image.url }}" alt="{{ type.name }}" style="border: 2px solid yellow;">
+        </div>
+        <br>
+
+        <div>
+            <h1 class="text-dark">{{ type.name }}</h1>
+            <p class="text-dark">{{ type.description }}</p>
+        </div>
+    {% else %}
+    <div>
+      <h1 class="text-center">Menu</h1>
+    </div>
+    <div class="container my-5">
+      <div class="row g-4">
+          <!-- Tile 1: Burgers -->
+          <div class="col-lg-3 col-md-6 col-sm-12">
+              <div class="card h-100">
+                  <!-- Image -->
+                  <img src="{% static 'images/burger.jpg' %}" class="card-img-top" alt="Burgers" style="margin-left: 0px;">
+                  <!-- Card Body with Button -->
+                  <div class="card-body d-flex flex-column justify-content-end text-center">
+                      <a href="%203aa7ec9e-9892-4512-951e-a343615c8cb8/" class="btn btn-outline-danger">Crave a burger?</a>
+                  </div>
+              </div>
+          </div>
+          
+          <!-- Tile 2: Beverages -->
+          <div class="col-lg-3 col-md-6 col-sm-12">
+              <div class="card h-100">
+                  <!-- Image -->
+                   
+                  <img src="{% static 'images/bev_homepage.png' %}" class="card-img-top" alt="Beverages"style="margin-left: 0px;">
+                  <!-- Card Body with Button -->
+                  <div class="card-body d-flex flex-column justify-content-end text-center">
+                      <a href="%20c682418e-67a0-4162-8a34-d16f71717f73/" class="btn btn-outline-danger">Feeling thirsty?</a>
+                  </div>
+              </div>
+          </div>
+          
+          <!-- Tile 3: Meal Deals -->
+          <div class="col-lg-3 col-md-6 col-sm-12">
+              <div class="card h-100">
+                  <!-- Image -->
+                  <img src="{% static 'images/fries_homepage_test.webp' %}" class="card-img-top" alt="Meal Deals" style="margin-left: 0px;">
+                  <!-- Card Body with Button -->
+                  <div class="card-body d-flex flex-column justify-content-end text-center">
+                      <a href="/%201df117f8-a493-4b90-b5ee-ba745bafecf5/" class="btn btn-outline-danger">Want a meal deal?</a>
+                  </div>
+              </div>
+          </div>
+          
+          <!-- Tile 4: Pizzas -->
+          <div class="col-lg-3 col-md-6 col-sm-12">
+              <div class="card h-100">
+                  <!-- Image -->
+                  <img src="{% static 'images/pizza_homepage.avif' %}" class="card-img-top" alt="Pizzas" style="margin-left: 0px;">
+                  <!-- Card Body with Button -->
+                  <div class="card-body d-flex flex-column justify-content-end text-center">
+                      <a href="%2045436cf1-68e5-42ed-baff-09da3575a11a/" class="btn btn-outline-danger">Check out our Pizzas</a>
+                  </div>
+              </div>
+          </div>
+      </div>
+  </div>
+  
+  
+    
+        <br>
+        <div class="info-container bg-white text-dark">
+            <h1 class="text-center text-danger my_title">Our menu range</h1>
+            <p class="text-justify">Serving the best food at your fingertips.</p>
+            <br>
+        </div>
+    {% endif %}
+    <div class="container">
+        <div class="row mx-auto">
+            {% for product in prods %}
+            <div class="my_bottom_margin col-9 col-lg-4 col-sm-12 col-md-4">
+              <a href="{{ product.get_absolute_url }}">
+                  <img class="card-img-top my_image" src="{{ product.image.url }}" alt="{{ product.name }}" style="border-radius: 10px;">
+              </a>
+              <div class="card-body text-dark text-center">
+                  <h4>{{ product.name }}</h4>
+                  <p>€{{ product.price }}</p>
+              </div>
+          </div>
+          
+            {% endfor %}
+        </div>
+        <br>
+    </div>
+{% endblock %}

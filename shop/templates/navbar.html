@@ -1,0 +1,103 @@
+{% load static %}
+<style>
+    /* Adjust Navbar Logo */
+.navbar-brand .logo {
+    max-height: 150px; /* Reduce the height of the logo */
+    width: 150px;      /* Maintain the aspect ratio */
+}
+
+/* Navbar Links */
+.navbar-nav .nav-link {
+    font-size: 16px; /* Make the links readable */
+    margin-right: 15px; /* Space out the links */
+    text-transform: capitalize;
+}
+
+/* Search Bar */
+.form-control {
+    max-width: 250px; /* Limit the width of the search bar */
+}
+
+.btn-dark {
+    font-size: 14px; /* Match button size to navbar content */
+    padding: 5px 10px;
+}
+
+</style>
+<nav class="navbar navbar-expand-lg bg-white text-dark py-3">
+    <div class="container-fluid">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent" aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <!-- Logo Section -->
+            <a class="navbar-brand" href="{% url 'shop:all_products' %}">
+                <img class="logo" src="{% static 'images/logo_new_2.png' %}" alt="Fast Food Restaurant">
+            </a>
+            
+            <!-- Navbar Links -->
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                <li class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle text-dark" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                        Shop
+                    </a>
+                    <ul class="dropdown-menu bg-white text-dark" aria-labelledby="navbarDropdown">
+                        <li><a class="dropdown-item text-dark" href="{% url 'shop:all_products' %}">All Products</a></li>
+                        {% for cat in links %}
+                            <li><a class="dropdown-item text-dark" href="{{ cat.get_absolute_url }}">{{ cat.name }}</a></li>
+                        {% endfor %}
+                    </ul>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link text-dark" href="{% url 'cart:cart_detail' %}">Your Cart</a>
+                </li> 
+                {% if item_count > 0 %}
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="{% url 'cart:cart_detail' %}"><i class="fas fa-shopping-cart"> ({{ item_count }})</i></a>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="{% url 'cart:cart_detail' %}"><i class="fas fa-shopping-cart"> ({{ item_count }})</i></a>
+                    </li>
+                {% endif %}
+            </ul>
+            
+            <!-- User Links -->
+            <ul class="navbar-nav ms-auto">
+                {% if user.is_authenticated %}
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle text-dark" href="#" id="userDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                            Welcome, {{ user.username }} <i class="fas fa-user-circle"></i>
+                        </a>
+                        <ul class="dropdown-menu bg-white text-dark" aria-labelledby="userDropdown">
+                            <li><a class="dropdown-item text-dark" href="{% url 'order:order_history' %}">Order History</a></li>
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <form method="POST" action="{% url 'logout' %}" class="d-inline">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-danger">Logout</button>
+                        </form>
+                    </li>
+                {% else %}
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="{% url 'signup' %}">Sign Up <i class="fas fa-user-plus"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="{% url 'login' %}">Sign In <i class="fas fa-sign-in-alt"></i></a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-dark" href="{% url 'reservations:reserve_table' %}">Reserve a Table <i class="fa fa-table"></i></a>
+                    </li>
+                {% endif %}
+            </ul>
+            
+            <!-- Search Bar -->
+            <form class="d-flex ms-3" action="{% url 'search_app:searchResult' %}" method="get">
+                <input class="form-control me-2 border-dark" type="search" placeholder="Search" aria-label="Search" name="q">
+                <button class="btn btn-dark my-2 my-sm-0" type="submit">Search</button>
+            </form>
+        </div>
+    </div>
+</nav>
+<hr class="text-dark">

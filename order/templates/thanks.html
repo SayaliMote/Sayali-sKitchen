@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}
+    Thanks - SIM'S Kitchen
+{% endblock %}
+{% block content %}
+    <div class="text-black bg-white">
+        <div class="text-center">
+            <br>
+            <br>
+            <h1 class="text-center my_title">
+                Thanks for placing your order
+            </h1>
+            <p>Your order number is: <b>{{ customer_order.id }}</b></p>
+            <br>
+            <p>
+                Your order has been received, and we will start processing 
+                it right away. You have received an email confirmation for 
+                your records. It includes information on the goods you bought.
+            </p>
+        </div>
+    </div>
+    <br>
+    <br>
+{% endblock %}

@@ -1,0 +1,123 @@
+/****Navbar****/
+.nav-item {
+    letter-spacing: .2em;
+    font-size: 14px;
+    text-transform: uppercase;
+    color: black;
+}
+.dropdown-item {
+    font-size: 14px;
+    letter-spacing: .2em;
+    text-transform: uppercase;
+    color: black;
+}
+.navbar {
+    background-color: white;
+}
+.navbar-brand, .navbar-nav .nav-link {
+    color: black;
+}
+.navbar-brand:hover, .navbar-nav .nav-link:hover {
+    color: red;
+}
+
+/****Footer****/
+.my_footer {
+    background-color: white;
+    border-top: 2px solid red;
+    color: black;
+}
+.my_footer p {
+    padding-top: 20px;
+    font-size: 14px;
+    color: black;
+}
+
+/****Type Page****/
+.my_row_class {
+    padding-top: 15px;
+    background-color: white;
+}
+.my_row_class .mx-auto p {
+    color: black;
+    font-size: 12px;
+}
+.my_row_class .mx-auto p a {
+    color: red;
+    font-size: 12px;
+    text-decoration: none;
+}
+
+/****Product Page****/
+img {
+    display: inline-block;
+    width: 100%;
+    margin: 10px;
+    border: 2px solid yellow;
+}
+.my_prod_row_class {
+    background-color: white;
+    padding-top: 15px;
+    padding-bottom: 20px;
+    color: black;
+}
+.my_prod_row_class .mx-auto p a {
+    color: red;
+    text-decoration: none;
+}
+.my_prod_title {
+    font-size: 30px;
+    text-transform: uppercase;
+    letter-spacing: .2em;
+    color: black;
+}
+.my_prod_text {
+    color: black;
+}
+
+/****Cart Page****/
+.my_custom_table {
+    min-width: 400px;
+    font-size: 14px;
+    background-color: white;
+    color: black;
+}
+.my_custom_thead {
+    background-color: yellow;
+    color: black;
+}
+.custom_a {
+    text-decoration: none;
+    color: red;
+}
+.custom_icon {
+    color: black !important;
+}
+.errorlist li {
+    color: red;
+    font-weight: bold;
+}
+
+/****Signup****/
+.my_top_navbar_div {
+    background-color: white;
+}
+.my_custom_menu ul li {
+    color: black;
+}
+.my_custom_menu ul li a {
+    color: red;
+}
+
+.info-container {
+    background-color: white;
+    padding: 20px;
+    border: 2px solid yellow;
+}
+
+/** Registration **/
+@media (min-width: 1025px) {
+    .h-custom {
+        height: 100vh !important;
+    }
+}

@@ -1,0 +1,37 @@
+{% extends "base.html" %}
+{% load static %}
+{% block metadescription %}
+    We have a variety of delicious food for everyone
+{% endblock %}
+{% block title %}
+    Search - Something for you
+{% endblock %}
+{% block content %}
+    <div class="text-light">
+        <p class="text-center my_search_text">You have searched for: <b>"{{ query }}"</b></p>
+        <p class="text-center my_search_text">These are the matches we found for:<b>"{{ query }}"</b></p>
+    </div>
+    <div class="container bg-dark">
+        <div class="row mx-auto bg-dark">
+            {% for product in product_list %}
+                <div class="my_bottom_margin col-9 col-sm-12 col-md-4 col-md-
+                12 col-lg-4">
+                    <div class="card text-center bg-dark" style="min-width: 18rem;">
+                        <a href="{{product.get_absolute_url}}"><img
+                        class="card-img-top my_image"
+                            src="{{product.image.url}}"
+                                alt="{{product.name}}"></a>
+                        <div class="card-body text-light">
+                            <h4>{{product.name}}</h4>
+                            <p>€{{product.price}}</p>
+                        </div>
+                    </div>
+                </div>
+                {% empty %}
+                <div class="row mx-auto">
+                    <p class="text-center my_search_text text-light">0 results found.</p>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+{% endblock %}
