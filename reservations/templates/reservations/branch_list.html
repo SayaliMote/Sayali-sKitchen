@@ -1,0 +1,6 @@
+<h1>Branches</h1>
+<ul>
+    {% for branch in branches %}
+    <li><a href="{% url 'reservations:branch_detail' branch.id %}">{{ branch.name }}</a></li>
+    {% endfor %}
+</ul>

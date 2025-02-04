@@ -1,0 +1,13 @@
+<h1>Make a Reservation</h1>
+<form method="POST">
+    {% csrf_token %}
+    <label for="branch_id">Branch:</label>
+    <input type="number" name="branch_id" required>
+    <label for="table_id">Table:</label>
+    <input type="number" name="table_id" required>
+    <label for="date">Date:</label>
+    <input type="date" name="date" required>
+    <label for="time">Time:</label>
+    <input type="time" name="time" required>
+    <button type="submit">Reserve</button>
+</form>

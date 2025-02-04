@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seat Selection</title>
+    <style>
+        #floor-plan {
+            position: relative;
+            width: 100%;
+            height: 500px;
+            border: 1px solid #ccc;
+            margin-top: 20px;
+            overflow: auto;
+        }
+        .table {
+            position: absolute;
+            border: 1px solid black;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+        .seat {
+            width: 30px;
+            height: 30px;
+            margin: 5px;
+            text-align: center;
+            line-height: 30px;
+            border-radius: 5px;
+            display: inline-block;
+        }
+        .available {
+            background-color: green;
+            cursor: pointer;
+        }
+        .reserved {
+            background-color: red;
+            cursor: not-allowed;
+        }
+        .selected {
+            background-color: blue !important;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h2>Select a Branch</h2>
+    <select id="branch-selector">
+        <option value="">-- Select a Branch --</option>
+        {% for branch in branches %}
+        <option value="{{ branch.id }}">{{ branch.name }}</option>
+        {% endfor %}
+    </select>
+
+    <div id="floor-plan">
+        <p style="text-align: center; margin-top: 200px;" id="empty-message">Please select a branch to view the floor plan.</p>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            let selectedSeats = []; // Store selected seat IDs
+
+            // Event listener for branch selection
+            $("#branch-selector").change(function () {
+                const branch_id = $(this).val(); // Get selected branch ID
+                if (branch_id) {
+                    $("#floor-plan").empty();
+                    selectedSeats = [];
+                    $.get(`/reserve_table/seats/${branch_id}/`, function (data) {
+                        if (data.length === 0) {
+                            $("#floor-plan").html("<p>No tables found for this branch.</p>");
+                            return;
+                        }
+                        data.forEach(function (table) {
+                            const tableDiv = $('<div>')
+                                .addClass('table')
+                                .text("Table " + table.table_number)
+                                .css({
+                                    left: table.x_position + "px",
+                                    top: table.y_position + "px",
+                                });
+                            table.seats.forEach(function (seat) {
+                                const seatDiv = $('<div>')
+                                    .addClass('seat')
+                                    .addClass(seat.is_reserved ? 'reserved' : 'available')
+                                    .text(seat.seat_number)
+                                    .attr('data-seat-id', seat.seat_number)
+                                    .click(function () {
+                                        if (!seat.is_reserved) {
+                                            $(this).toggleClass('selected');
+                                            const seatId = $(this).attr('data-seat-id');
+                                            if ($(this).hasClass('selected')) {
+                                                selectedSeats.push(seatId);
+                                            } else {
+                                                selectedSeats = selectedSeats.filter(id => id !== seatId);
+                                            }
+                                        }
+                                    });
+                                tableDiv.append(seatDiv);
+                            });
+                            $("#floor-plan").append(tableDiv);
+                        });
+                    }).fail(function () {
+                        alert("Failed to load tables and seats. Please try again.");
+                    });
+                } else {
+                    $("#floor-plan").html("<p style='text-align: center; margin-top: 200px;'>Please select a branch to view the floor plan.</p>");
+                }
+            });
+
+            // Handle reservation submission
+            $("#reserve-button").click(function () {
+                if (selectedSeats.length === 0) {
+                    alert("Please select at least one seat to continue.");
+                    return;
+                }
+
+                // Prepare data for the reservation
+                const reservationData = {
+                    seats: selectedSeats,
+                    name: prompt("Enter your name:"),
+                    phone: prompt("Enter your phone number:"),
+                    email: prompt("Enter your email address:"),
+                    date: prompt("Enter reservation date (YYYY-MM-DD):"),
+                    time: prompt("Enter reservation time (HH:MM:SS):"),
+                    number_of_persons: prompt("Enter number of persons:"),
+                    special_requirements: prompt("Enter any special requirements:"),
+                };
+
+                // Send reservation data to the server
+                $.ajax({
+                    url: '/reserve_table/reserve/',
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(reservationData),
+                    success: function (response) {
+                        alert(response.message);
+                        // Clear selected seats and refresh the page
+                        selectedSeats = [];
+                        location.reload();
+                    },
+                    error: function (xhr) {
+                        alert("Failed to reserve seats. Error: " + xhr.responseText);
+                    }
+                });
+            });
+        });
+    </script>
+
+    <div>
+        <button id="reserve-button" style="margin-top: 20px;">Reserve Seats</button>
+    </div>
+</body>
+</html>

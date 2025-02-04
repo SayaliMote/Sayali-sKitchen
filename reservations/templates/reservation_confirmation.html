@@ -1,8 +1,11 @@
-{% extends "base.html" %} 
-{% load static %}
-{% load crispy_forms_tags %}
+{% extends "base.html" %}
 {% block content %}
-    <h1 class="text-dark">Thank you for your reservation!</h1>
-    <p class="text-dark">Your reservation has been confirmed.</p>
+<h1 class="text-dark">Thank you for your reservation!</h1>
+<p class="text-dark">Your reservation has been confirmed.</p>
+<p class="text-dark">Table Number: {{ reservation.table.number }}</p>
+<p class="text-dark">Seats Reserved: 
+    {% for seat in reservation.seats.all %}
+        Seat {{ seat.seat_number }},
+    {% endfor %}
+</p>
 {% endblock %}
-

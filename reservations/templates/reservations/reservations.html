@@ -1,0 +1,78 @@
+{% extends "base.html" %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}Book a Table{% endblock %}
+
+{% block content %}
+<div>
+  <h1 class="my_title text-center">Book a Table</h1>
+  <p class="text-center text-black bg-white">Choose a branch, table, and seats below.</p>
+
+  <form method="post" class="text-black bg-white">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Submit Reservation</button>
+  </form>
+
+  <h2 class="text-center">Select Your Seats</h2>
+  <canvas id="floorplan" width="600" height="400"></canvas>
+
+  <script>
+    const branchSelect = document.getElementById('id_branch');
+    const tableSelect = document.getElementById('id_table');
+    const canvas = document.getElementById("floorplan");
+    const ctx = canvas.getContext("2d");
+
+    branchSelect.addEventListener('change', function() {
+        const branchId = this.value;
+        fetch(`/reservations/get_tables/${branchId}/`)
+            .then(response => response.json())
+            .then(data => {
+                tableSelect.innerHTML = '';
+                data.tables.forEach(table => {
+                    const option = document.createElement('option');
+                    option.value = table.id;
+                    option.textContent = `Table ${table.number} (Capacity: ${table.capacity})`;
+                    tableSelect.appendChild(option);
+                });
+            });
+    });
+
+    tableSelect.addEventListener('change', function() {
+        const tableId = this.value;
+        fetch(`/reservations/get_seats/${tableId}/`)
+            .then(response => response.json())
+            .then(data => {
+                seats = data.seats.map(seat => ({
+                    id: seat.id,
+                    seat_number: seat.seat_number,
+                    status: "available"
+                }));
+                drawSeats();
+            });
+    });
+
+    let seats = [];
+
+    canvas.addEventListener("click", function(event) {
+        const x = event.offsetX, y = event.offsetY;
+        seats.forEach(seat => {
+            if (Math.abs(x - seat.x) < 20 && Math.abs(y - seat.y) < 20 && seat.status === "available") {
+                seat.status = "selected";
+                drawSeats();
+            }
+        });
+    });
+
+    function drawSeats() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        seats.forEach(seat => {
+            ctx.fillStyle = seat.status === "available" ? "green" : (seat.status === "selected" ? "blue" : "red");
+            ctx.beginPath();
+            ctx.arc(seat.x, seat.y, 15, 0, Math.PI * 2);
+            ctx.fill();
+        });
+    }
+  </script>
+</div>
+{% endblock %}

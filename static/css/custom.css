@@ -121,3 +121,47 @@ img {
         height: 100vh !important;
     }
 }
+
+/* Filter Form */
+.filter-form {
+    margin-bottom: 20px;
+    padding: 15px;
+    border: 2px solid yellow;
+    border-radius: 10px;
+    background-color: #fff;
+}
+
+.filter-form label {
+    font-size: 14px;
+    color: black;
+    font-weight: bold;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.filter-form input,
+.filter-form select,
+.filter-form button {
+    font-size: 14px;
+    padding: 5px 10px;
+    border: 1px solid yellow;
+    border-radius: 5px;
+    width: 100%;
+    margin-bottom: 10px;
+    background-color: white;
+    color: black;
+}
+
+.filter-form button {
+    background-color: red;
+    color: white;
+    border: none;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.filter-form button:hover {
+    background-color: darkred;
+}
+
