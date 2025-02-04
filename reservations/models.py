@@ -23,8 +23,11 @@ class Seat(models.Model):
     seat_number = models.IntegerField()
     is_reserved = models.BooleanField(default=False)
 
+    class Meta:
+        unique_together = ('table', 'seat_number')  # Ensure unique seat_number per table
+
     def __str__(self):
-        return f"Seat {self.seat_number} at Table {self.table.table_number}"
+        return f"Seat {self.seat_number} at Table {self.table.table_number} in {self.table.branch.name}"
 
 class Reservation(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True, blank=True)
