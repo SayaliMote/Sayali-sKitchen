@@ -1,15 +1,16 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.core.mail import send_mail
+from django.template.loader import render_to_string
+from django.conf import settings
 from .models import Branch, Table, Seat, Reservation
 from django.utils.timezone import now
 import json
 
-
 def reserve_table(request):
     branches = Branch.objects.all()
     return render(request, 'reservations/seat_selection.html', {"branches": branches})
-
 
 def seat_selection(request, branch_id):
     branch = get_object_or_404(Branch, id=branch_id)
@@ -28,7 +29,6 @@ def seat_selection(request, branch_id):
         })
 
     return JsonResponse(data, safe=False)
-
 
 @csrf_exempt
 def reserve_seats(request):
@@ -49,10 +49,9 @@ def reserve_seats(request):
 
             reservations = []
 
-            # Process each seat
             for seat_id in seat_ids:
                 try:
-                    seat = Seat.objects.get(id=seat_id)  # Use the unique seat ID
+                    seat = Seat.objects.get(id=seat_id)
                 except Seat.DoesNotExist:
                     return JsonResponse({"error": f"Seat with ID {seat_id} does not exist."}, status=404)
 
@@ -63,7 +62,7 @@ def reserve_seats(request):
                 seat.is_reserved = True
                 seat.save()
 
-                # Create a reservation object
+                # Create reservation object
                 reservation = Reservation.objects.create(
                     user=request.user if request.user.is_authenticated else None,
                     seat=seat,
@@ -77,7 +76,30 @@ def reserve_seats(request):
                 )
                 reservations.append(reservation)
 
+            # Send confirmation email
+            send_reservation_email(email, name, date, time, number_of_persons, seat_ids)
+
             return JsonResponse({"message": "Seats reserved successfully!", "reservations": [res.id for res in reservations]})
         except Exception as e:
             return JsonResponse({"error": str(e)}, status=500)
     return JsonResponse({"error": "Invalid request."}, status=400)
+
+def send_reservation_email(user_email, name, date, time, number_of_persons, seats):
+    """ Sends a reservation confirmation email """
+    subject = "Your Reservation Confirmation"
+    context = {
+        "name": name,
+        "date": date,
+        "time": time,
+        "seats": seats,
+        "number_of_persons": number_of_persons,
+    }
+    
+    html_message = render_to_string("reservations/email_confirmation.html", context)
+    send_mail(
+        subject,
+        "",  # Leave the plain-text version empty since we're using HTML
+        settings.EMAIL_HOST_USER,
+        [user_email],
+        html_message=html_message,
+    )

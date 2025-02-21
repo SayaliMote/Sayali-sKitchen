@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Reservation Confirmation</title>
+</head>
+<body>
+    <h2>Hello {{ name }},</h2>
+    <p>Your reservation has been confirmed.</p>
+    <p><b>Date:</b> {{ date }}</p>
+    <p><b>Time:</b> {{ time }}</p>
+    <p><b>Seats Reserved:</b> {{ seats|join:", " }}</p>
+    <p><b>Number of Persons:</b> {{ number_of_persons }}</p>
+    <p>Thank you for choosing our restaurant.</p>
+    <br>
+    <p>Best Regards,<br>Sayali's Kitchen</p>
+</body>
+</html>

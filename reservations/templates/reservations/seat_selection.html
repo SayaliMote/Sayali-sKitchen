@@ -5,32 +5,82 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Seat Selection</title>
     <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f4f4;
+        }
+        h2, h3 {
+            text-align: center;
+        }
         #floor-plan {
             position: relative;
-            width: 100%;
+            width: 800px;
             height: 500px;
-            border: 1px solid #ccc;
-            margin-top: 20px;
-            overflow: auto;
+            margin: 20px auto;
+            background-color: #fff;
+            border: 3px solid black;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 3px 3px 10px rgba(0, 0, 0, 0.2);
         }
+        /* Walls */
+        .wall {
+            position: absolute;
+            background-color: black;
+        }
+        .horizontal-wall {
+            width: 100%;
+            height: 10px;
+        }
+        .vertical-wall {
+            width: 10px;
+            height: 100%;
+        }
+        /* Entrance Door */
+        .door {
+            position: absolute;
+            width: 50px;
+            height: 10px;
+            background-color: brown;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        /* Windows */
+        .window {
+            position: absolute;
+            width: 80px;
+            height: 10px;
+            background-color: lightblue;
+            border: 1px solid #0af;
+        }
+        /* Tables */
         .table {
             position: absolute;
-            border: 1px solid black;
-            padding: 10px;
-            background-color: #f9f9f9;
+            width: 80px;
+            height: 80px;
+            background-color: #d9b382;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border: 2px solid black;
         }
+        /* Seats */
         .seat {
             width: 30px;
             height: 30px;
-            margin: 5px;
+            margin: 3px;
             text-align: center;
             line-height: 30px;
             border-radius: 5px;
             display: inline-block;
+            font-weight: bold;
+            cursor: pointer;
         }
         .available {
             background-color: green;
-            cursor: pointer;
         }
         .reserved {
             background-color: red;
@@ -43,6 +93,7 @@
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
+
     <h2>Select a Branch</h2>
     <select id="branch-selector">
         <option value="">-- Select a Branch --</option>
@@ -52,7 +103,22 @@
     </select>
 
     <div id="floor-plan">
-        <p style="text-align: center; margin-top: 200px;" id="empty-message">Please select a branch to view the floor plan.</p>
+        <!-- Walls -->
+        <div class="wall horizontal-wall" style="top: 0;"></div>
+        <div class="wall horizontal-wall" style="bottom: 0;"></div>
+        <div class="wall vertical-wall" style="left: 0;"></div>
+        <div class="wall vertical-wall" style="right: 0;"></div>
+
+        <!-- Windows -->
+        <div class="window" style="top: 0; left: 20%;"></div>
+        <div class="window" style="top: 0; right: 20%;"></div>
+
+        <!-- Entrance Door -->
+        <div class="door"></div>
+
+        <p style="text-align: center; margin-top: 200px;" id="empty-message">
+            Please select a branch to view the floor plan.
+        </p>
     </div>
 
     <div id="reservation-form" style="display: none;">
@@ -85,24 +151,29 @@
 
     <script>
         $(document).ready(function () {
-            let selectedSeats = []; // To store selected seat IDs
+            let selectedSeats = []; 
 
-            // Handle branch selection
             $("#branch-selector").change(function () {
                 const branch_id = $(this).val();
                 if (branch_id) {
-                    $("#floor-plan").empty();
+                    $("#floor-plan").empty().append(`
+                        <div class="wall horizontal-wall" style="top: 0;"></div>
+                        <div class="wall horizontal-wall" style="bottom: 0;"></div>
+                        <div class="wall vertical-wall" style="left: 0;"></div>
+                        <div class="wall vertical-wall" style="right: 0;"></div>
+                        <div class="window" style="top: 0; left: 20%;"></div>
+                        <div class="window" style="top: 0; right: 20%;"></div>
+                        <div class="door"></div>
+                    `);
                     selectedSeats = [];
-                    $("#reservation-form").hide(); // Hide form until seats are selected
+                    $("#reservation-form").hide(); 
 
-                    // Fetch floor plan data for the selected branch
                     $.get(`/reserve_table/seats/${branch_id}/`, function (data) {
                         if (data.length === 0) {
-                            $("#floor-plan").html("<p>No tables found for this branch.</p>");
+                            $("#floor-plan").append("<p>No tables found for this branch.</p>");
                             return;
                         }
 
-                        // Render each table and seat
                         data.forEach(function (table) {
                             const tableDiv = $('<div>')
                                 .addClass('table')
@@ -112,13 +183,12 @@
                                     top: table.y_position + "px",
                                 });
 
-                            // Render each seat
                             table.seats.forEach(function (seat) {
                                 const seatDiv = $('<div>')
                                     .addClass('seat')
                                     .addClass(seat.is_reserved ? 'reserved' : 'available')
-                                    .text(seat.seat_number) // Display seat number
-                                    .attr('data-seat-id', seat.id) // Use the unique seat ID
+                                    .text(seat.seat_number)
+                                    .attr('data-seat-id', seat.id)
                                     .click(function () {
                                         if (!seat.is_reserved) {
                                             $(this).toggleClass('selected');
@@ -128,7 +198,6 @@
                                             } else {
                                                 selectedSeats = selectedSeats.filter(id => id !== seatId);
                                             }
-                                            console.log("Selected Seats:", selectedSeats); // Debugging log
                                         }
                                     });
                                 tableDiv.append(seatDiv);
@@ -137,22 +206,18 @@
                             $("#floor-plan").append(tableDiv);
                         });
 
-                        $("#reservation-form").show(); // Show the reservation form when the floor plan loads
+                        $("#reservation-form").show();
                     });
                 } else {
                     $("#floor-plan").html("<p>Please select a branch to view the floor plan.</p>");
                 }
             });
 
-            // Handle reservation submission
             $("#reserve-button").click(function () {
                 if (selectedSeats.length === 0) {
-                    alert("Please select at least one seat to continue.");
+                    alert("Please select at least one seat.");
                     return;
                 }
-
-                // Log selected seat IDs to console for debugging
-                console.log("Selected Seats:", selectedSeats);
 
                 const reservationDetails = {
                     seats: selectedSeats,
@@ -165,7 +230,6 @@
                     special_requirements: $("#special_requirements").val(),
                 };
 
-                // Send reservation data to the server
                 $.ajax({
                     url: '/reserve_table/reserve/',
                     type: 'POST',
@@ -173,7 +237,7 @@
                     data: JSON.stringify(reservationDetails),
                     success: function (response) {
                         alert(response.message);
-                        window.location.href = "/"; // Redirect to home page after successful reservation
+                        window.location.href = "/";
                     },
                     error: function (xhr) {
                         alert("Failed to reserve seats. Error: " + xhr.responseText);
