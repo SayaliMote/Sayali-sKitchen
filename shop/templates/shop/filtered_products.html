@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <h2>Filtered Products</h2>
+
+    <form id="calorie-form">
+        {% for category, products in product_categories.items %}
+            <h3>{{ category }}</h3>
+            <ul>
+                {% for product in products %}
+                    <li>
+                        <input type="checkbox" class="product-checkbox" 
+                               data-calories="{{ product.calories }}"
+                               onchange="calculateTotalCalories()">
+                        {{ product.name }} - {{ product.calories }} kcal
+                    </li>
+                {% endfor %}
+            </ul>
+        {% endfor %}
+
+        <h3>Total Calories: <span id="total-calories">0</span> kcal</h3>
+    </form>
+
+    <script>
+        function calculateTotalCalories() {
+            let total = 0;
+            document.querySelectorAll('.product-checkbox:checked').forEach((checkbox) => {
+                total += parseInt(checkbox.getAttribute('data-calories'));
+            });
+            document.getElementById('total-calories').innerText = total;
+        }
+    </script>
+{% endblock %}

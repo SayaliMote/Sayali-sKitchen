@@ -35,8 +35,7 @@ class Product(models.Model):
     image = models.ImageField(upload_to = 'product', blank=True)
     stock = models.IntegerField()
     available = models.BooleanField(default=True)
-    created = models.DateTimeField(auto_now_add=True, blank = True, null= True
-)
+    created = models.DateTimeField(auto_now_add=True, blank = True, null= True)
     updated = models.DateTimeField(auto_now=True, blank = True, null= True)
     calories = models.IntegerField(default=0)
     

@@ -39,3 +39,33 @@ def product_detail(request, type_id, product_id):
         review = ProductReview.objects.create(product=product, stars=stars, content=content)
 
     return render(request, 'shop/product.html', {'product':product})
+
+
+
+
+
+def filtered_products(request):
+    search_query = request.GET.get('search_query', '')
+    calorie_limit = request.GET.get('calorie_limit', None)
+
+    products = Product.objects.all()
+
+    # Apply search filter
+    if search_query:
+        products = products.filter(name__icontains=search_query)
+
+    # Apply calorie filter
+    if calorie_limit:
+        products = products.filter(calories__lte=int(calorie_limit))
+
+    # Group products by their type
+    product_categories = {}
+    for product in products:
+        category_name = product.type.name
+        if category_name not in product_categories:
+            product_categories[category_name] = []
+        product_categories[category_name].append(product)
+
+    return render(request, 'shop/filtered_products.html', {
+        'product_categories': product_categories
+    })
