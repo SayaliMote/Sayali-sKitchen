@@ -38,6 +38,7 @@ class Product(models.Model):
     created = models.DateTimeField(auto_now_add=True, blank = True, null= True
 )
     updated = models.DateTimeField(auto_now=True, blank = True, null= True)
+    calories = models.IntegerField(default=0)
     
     class Meta:
         ordering = ('name',)
