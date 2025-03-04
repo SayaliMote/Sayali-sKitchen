@@ -1,178 +1,38 @@
-{% extends "base.html" %}
-{% load static %}
-{% block metadescription %}
-    This is the shopping cart page. Proceed to review your cart and place the order.
-{% endblock %}
-{% block title %}
-    Cart
-{% endblock %}
-{% block content %}
-    {% if not cart_items %}
-        <div class="text-black bg-white">
-            <div class="text-center">
-                <br>
-                <h1 class="text-center my_title">
-                    Your shopping cart is empty
-                </h1>
-                <br>
-                <p class="text-center">
-                    Please click <a href="{% url 'shop:all_products' %}">here</a> to continue shopping.
-                </p>
-            </div>
-        </div>
-    {% else %}
-        <div class="text-black bg-white">
-            <div class="text-center">
-                <br>
-                <h1 class="text-center my_title">
-                    Your shopping cart
-                </h1>
-                <br>
-            </div>
-        </div>
-        <div class="row mx-auto text-black bg-white">
-            <div class="col-12 col-sm-12 col-md-12 col-lg-6 text-center">
-                <table class="table my_custom_table">
-                    <thead class="my_custom_thead">
-                        <tr>
-                            <th colspan="5">
-                                Your items
-                            </th>
-                        </tr>
-                        
-                    </thead>
-                    <tbody>
-                        {% for cart_item in cart_items %}
-                            <tr>
-                                <td>
-                                    <a href="{{cart_item.product.get_url}}"><img src="{{cart_item.product.image.url}}" 
-                                     alt="" class="float-left rounded custom_image"></a>
-                                </td>
-                                <td class="text-left">
-                                    {{cart_item.product.name}}
-                                    <br>
-                                    Unit Price: €{{cart_item.product.price}}
-                                    <br>
-                                    Qty: {{cart_item.quantity}} x €{{cart_item.product.price}}
-                                </td>
-                                <td>
-                                    €{{cart_item.sub_total}}
-                                </td>
-                                {% if cart_item.quantity < cart_item.product.stock %}
-                                    <td>
-                                        <a href="{% url 'cart:add_cart' cart_item.product.id %}" class="custom_a"><i class="fas fa-plus-circle  
-                                           custom_icon"></i></a>&nbsp;
-                                        <a href="{% url 'cart:cart_remove' cart_item.product.id %}" class="custom_a"><i class="fas fa-minus-circle 
-                                           custom_icon"></i></a>&nbsp;
-                                        <a href="{% url 'cart:full_remove' cart_item.product.id %}" class="custom_icon"><i class="fas fa-trash-alt custom_icon"></i></a>
-                                    </td>
-                                {% else %}
-                                    <td>
-                                        &nbsp;<a href="{% url 'cart:cart_remove' cart_item.product.id %}" class="custom_a"><i class="fas fa-minus-circle 
-                                        custom_icon"></i></a>&nbsp;
-                                        <a href="{% url 'cart:full_remove' cart_item.product.id %}" class="custom_icon"><i class="fas fa-trash-alt custom_icon"></i></a>
-                                    </td>
-                                    <td></td>
-                                {% endif %}
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-                
-                
-            </div>
-            {% if user.is_authenticated %}
-            <div class="col-12 col-sm-12 col-md-12 col-lg-6 text-center text-black bg-white">
-                <table class="table my_custom_table">
-                    <thead class="my_custom_thead">
-                        <tr>
-                            <th>
-                                Checkout
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-black bg-white">
-                        <tr>
-                            <td class="text-black bg-white">
-                                Please review your cart items before proceeding with the order payment.
-                            </td>
-                        </tr>
-                        {% if voucher %}
-                        <tr class="subtotal">
-                        <td>Total</td>
-                        <td colspan="4"></td>
-                        <td class="num">€{{ total|floatformat:"2" }}</td>
-                        </tr>
-                        <tr>
-                            <td>
-                            "{{ voucher.code }}" voucher
-                            ({{ voucher.discount }}% off)
-                            </td>
-                            <td colspan="4"></td>
-                            <td class="num neg">
-                            - €{{ discount|floatformat:"2" }}
-                            </td>
-                        </tr>
-                        <tr class="total">
-                            <td>Total</td>
-                            <td colspan="4"></td>
-                            <td class="num">
-                                    €{{ new_total|floatformat:"2" }}
-                            </td>
-                        </tr>
-                        {% else %}
-                                <tr class="total">
-                                    <td>Total</td>
-                                    <td colspan="4"></td>
-                                    <td class="num">
-                                        €{{ total|floatformat:"2" }}
-                                    </td>
-                                </tr>
-                            </tr>
-                            {% endif %}
-                        </tbody>
-                    </table>
-                    <p>Apply a voucher:</p>
-                    <form action="{% url 'vouchers:apply' %}" method="post">
-                        {{ voucher_apply_form }}
-                        <input type="submit" value="Apply">
-                        {% csrf_token %}
-                    </form>
+{% extends 'base.html' %}
 
-                    </tbody>
-                </table>
-                <form action="" method="POST">
-                    {% csrf_token %}
-                        <script src="https://checkout.stripe.com/checkout.js" class="stripe-button"
-                            data-key="{{ data_key }}"
-                            data-amount="{{ stripe_total }}"
-                            data-name="Sims kitchen"
-                            data-description="{{ description }}"
-                            data-image="{% static 'images/shoplogo.png' %}"
-                            data-locale="auto"
-                            data-currency="eur"
-                            data-shipping-address="true"
-                            data-billing-address="true"
-                            data-zip-code="true">
-                        </script>
-                    </form>
-                    
-                <div class="mx-auto text-black bg-white" >
-                    <a href="{% url 'shop:all_products' %}" class="btn btn-secondary btn-block 
-                     my_custom_button">Continue 
-                    Shopping</a>
-                </div>
-            </div>
-            {% else %}
-            <div class="col-12 col-sm-12 col-md-12 col-lg-6 text-center text-black bg-white">
-                <h3>Pls sign in to pay:<a style="color: black;" href="{% url 'login' %}">Sign In <i class="fas fa-sign-in-alt"></i></a></h3>
-                <a href="{% url 'shop:all_products' %}" class="btn btn-secondary btn-block 
-                 my_custom_button">Continue 
-                Shopping</a>
-            </div>
-            
-            {% endif %}
-        </div>
-        <br>
-    {% endif %}
+{% block content %}
+    <h2>Filtered Products</h2>
+
+    <form method="GET">
+        {% for type in types %}
+            <h3>{{ type.name }}</h3>
+            <ul>
+                {% for product in products %}
+                    {% if product.type == type %}
+                        <li style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                            <!-- Checkbox -->
+                            <input type="checkbox" 
+                                   name="selected_products" 
+                                   value="{{ product.id }}" 
+                                   {% if product.id in selected_products %}checked{% endif %}>
+
+                            <!-- Product Image -->
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" 
+     style="width: 80px; height: auto; border-radius: 5px; border: 1px solid #ddd;">
+
+
+                            <!-- Product Name & Calories as a Link -->
+                            <a href="{% url 'shop:product_detail' type_id=product.type.id product_id=product.id %}" 
+                               class="custom-link" 
+                               style="text-decoration: none; color: black; font-weight: bold;">
+                                {{ product.name }} - {{ product.calories }} kcal
+                            </a>
+                        </li>
+                    {% endif %}
+                {% endfor %}
+            </ul>
+        {% endfor %}
+
+        <h3>Total Selected Calories: <span id="totalCalories">{{ total_calories }}</span> kcal</h3>
+    </form>
 {% endblock %}
