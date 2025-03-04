@@ -9,23 +9,25 @@
             <ul>
                 {% for product in products %}
                     {% if product.type == type %}
-                        <li style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                        <li style="display: flex; align-items: center; gap: 15px; margin-bottom: 10px; padding: 10px; border: 1px solid #ddd; border-radius: 5px;">
                             <!-- Checkbox -->
                             <input type="checkbox" 
                                    name="selected_products" 
                                    value="{{ product.id }}" 
+                                   data-calories="{{ product.calories }}"
+                                   class="product-checkbox"
                                    {% if product.id in selected_products %}checked{% endif %}>
 
                             <!-- Product Image -->
-                            <img src="{{ product.image.url }}" alt="{{ product.name }}" 
-     style="width: 80px; height: auto; border-radius: 5px; border: 1px solid #ddd;">
-
+                            <img src="{{ product.image.url }}" 
+                                 alt="{{ product.name }}" 
+                                 style="width: 80px; height: auto; border-radius: 5px; border: 1px solid #ddd;">
 
                             <!-- Product Name & Calories as a Link -->
                             <a href="{% url 'shop:product_detail' type_id=product.type.id product_id=product.id %}" 
                                class="custom-link" 
                                style="text-decoration: none; color: black; font-weight: bold;">
-                                {{ product.name }} - {{ product.calories }} kcal
+                                {{ product.name }} - <span class="product-calories">{{ product.calories }}</span> kcal
                             </a>
                         </li>
                     {% endif %}
@@ -33,6 +35,35 @@
             </ul>
         {% endfor %}
 
-        <h3>Total Selected Calories: <span id="totalCalories">{{ total_calories }}</span> kcal</h3>
+        <h3>Total Selected Calories: <span id="totalCalories">{{ total_calories }}</span></h3>
     </form>
+
+    <!-- JavaScript for Dynamic Calorie Calculation -->
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const checkboxes = document.querySelectorAll(".product-checkbox");
+            const totalCaloriesSpan = document.getElementById("totalCalories");
+
+            function updateTotalCalories() {
+                let totalCalories = 0;
+                
+                checkboxes.forEach(checkbox => {
+                    if (checkbox.checked) {
+                        let calories = parseInt(checkbox.getAttribute("data-calories")) || 0;
+                        totalCalories += calories;
+                    }
+                });
+
+                totalCaloriesSpan.textContent = totalCalories + " kcal";
+            }
+
+            checkboxes.forEach(checkbox => {
+                checkbox.addEventListener("change", updateTotalCalories);
+            });
+
+            // Initial calculation on page load
+            updateTotalCalories();
+        });
+    </script>
+
 {% endblock %}

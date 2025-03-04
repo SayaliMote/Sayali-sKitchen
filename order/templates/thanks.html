@@ -1,25 +1,35 @@
 {% extends "base.html" %}
 {% load static %}
+
 {% block title %}
-    Thanks - SIM'S Kitchen
+    Order Confirmation - Sayali's Kitchen
 {% endblock %}
+
 {% block content %}
-    <div class="text-black bg-white">
-        <div class="text-center">
-            <br>
-            <br>
-            <h1 class="text-center my_title">
-                Thanks for placing your order
-            </h1>
-            <p>Your order number is: <b>{{ customer_order.id }}</b></p>
-            <br>
-            <p>
-                Your order has been received, and we will start processing 
-                it right away. You have received an email confirmation for 
-                your records. It includes information on the goods you bought.
+    <div class="container mt-5 mb-5">
+        <div class="card shadow-lg border-0 rounded p-4 text-center bg-light">
+            <img src="{% static 'images/order_success.png' %}" alt="Order Success" class="img-fluid mb-3" style="max-width: 150px;">
+
+            <h1 class="text-success fw-bold">Thank You, <b>{{ customer_order.billingName }}</b>!</h1>
+            
+            <p class="lead">Your order has been placed successfully.</p>
+            
+            <div class="alert alert-success mt-3">
+                <h4>Order ID: <b>#{{ customer_order.id }}</b></h4>
+                <h5>Total Amount: <b>€{{ customer_order.total }}</b></h5>
+                <p class="text-muted">We have sent an email confirmation with your order details.</p>
+            </div>
+
+            <p class="mb-4">
+                Your delicious meal is being prepared! We will notify you once it's ready for delivery.
             </p>
+
+            <a href="{% url 'shop:all_products' %}" class="btn btn-primary btn-lg">
+                Continue Shopping
+            </a>
+            <a href="{% url 'order:order_history' %}" class="btn btn-outline-secondary btn-lg">
+                View Order History
+            </a>
         </div>
     </div>
-    <br>
-    <br>
 {% endblock %}

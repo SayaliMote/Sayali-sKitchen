@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Order Confirmation - Sayali's Kitchen</title>
+</head>
+<body style="font-family: Arial, sans-serif; padding: 20px; background-color: #f9f9f9;">
+    <h2 style="color: #2c3e50;">Thank you for your order, {{ order.billingName }}! </h2>
+    
+    <p>Your order has been successfully placed. Below are your order details:</p>
+
+    <table style="width: 100%; border-collapse: collapse; border: 1px solid #ddd;">
+        <tr>
+            <th style="border: 1px solid #ddd; padding: 8px;">Order Number</th>
+            <td style="border: 1px solid #ddd; padding: 8px;">#{{ order.id }}</td>
+        </tr>
+        <tr>
+            <th style="border: 1px solid #ddd; padding: 8px;">Total Amount</th>
+            <td style="border: 1px solid #ddd; padding: 8px;">€{{ order.total }}</td>
+        </tr>
+        <tr>
+            <th style="border: 1px solid #ddd; padding: 8px;">Billing Address</th>
+            <td style="border: 1px solid #ddd; padding: 8px;">{{ order.billingAddress1 }}, {{ order.billingCity }}, {{ order.billingCountry }}</td>
+        </tr>
+    </table>
+
+    <h3>Ordered Items:</h3>
+    <ul>
+        {% for item in order.orderitem_set.all %}
+            <li>{{ item.product }} - {{ item.quantity }}x - €{{ item.price }}</li>
+        {% endfor %}
+    </ul>
+
+    <p>You will receive another update when your order is out for delivery.</p>
+
+    <p style="color: green;">Enjoy your meal! - <b>Sayali's Kitchen</b></p>
+</body>
+</html>
