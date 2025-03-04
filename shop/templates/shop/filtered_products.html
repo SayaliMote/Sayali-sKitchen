@@ -9,23 +9,24 @@
             <ul>
                 {% for product in products %}
                     {% if product.type == type %}
-                        <li class="product-item">
+                        <li style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                            <!-- Checkbox -->
                             <input type="checkbox" 
                                    name="selected_products" 
                                    value="{{ product.id }}" 
                                    {% if product.id in selected_products %}checked{% endif %}>
-                            
-                            <img src="{{ product.image.url }}" alt="{{ product.name }}" width="50" height="50">
 
+                            <!-- Product Image -->
+                            <img src="{{ product.image.url }}" alt="{{ product.name }}" 
+     style="width: 80px; height: auto; border-radius: 5px; border: 1px solid #ddd;">
+
+
+                            <!-- Product Name & Calories as a Link -->
                             <a href="{% url 'shop:product_detail' type_id=product.type.id product_id=product.id %}" 
-                               class="custom-link">
+                               class="custom-link" 
+                               style="text-decoration: none; color: black; font-weight: bold;">
                                 {{ product.name }} - {{ product.calories }} kcal
                             </a>
-
-                            <!-- Add to Cart Button -->
-                            <button class="add-to-cart-btn" onclick="addToCart('{{ product.id }}', event)">
-                                Add to Cart
-                            </button>
                         </li>
                     {% endif %}
                 {% endfor %}
@@ -34,36 +35,4 @@
 
         <h3>Total Selected Calories: <span id="totalCalories">{{ total_calories }}</span> kcal</h3>
     </form>
-    <script>
-        function addToCart(productId, event) {
-    event.preventDefault(); // Prevent page reload
-
-    // Example: Replace alert with actual cart functionality
-    alert("Product " + productId + " added to cart!"); 
-
-    // You can send an AJAX request to update the cart dynamically
-    fetch('/cart/add/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCSRFToken() // Ensure CSRF protection
-        },
-        body: JSON.stringify({ product_id: productId })
-    })
-    .then(response => response.json())
-    .then(data => {
-        console.log(data);
-        alert("Cart updated!");
-    })
-    .catch(error => console.error('Error:', error));
-}
-
-// Function to get CSRF token (needed for POST requests in Django)
-function getCSRFToken() {
-    return document.cookie.split('; ')
-        .find(row => row.startsWith('csrftoken='))
-        ?.split('=')[1];
-}
-
-    </script>
 {% endblock %}
