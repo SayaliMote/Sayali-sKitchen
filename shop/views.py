@@ -47,31 +47,35 @@ def product_detail(request, type_id, product_id):
 from itertools import combinations
 
 def filtered_products(request):
-    search_query = request.GET.get('search_query', '')
-    calorie_limit = request.GET.get('calorie_limit', None)
+    search_query = request.GET.get('search_query', '').strip()  # Get search query
+    calorie_limit = request.GET.get('calorie_limit', '').strip()  # Get calorie limit
 
+    # Start with all products
     products = Product.objects.all()
 
-    # Apply search filter
+    # 🔹 Apply search filter (Only filter by name)
     if search_query:
         products = products.filter(name__icontains=search_query)
 
-    # Apply calorie filter
-    if calorie_limit:
+    # 🔹 Apply calorie filter (Only if a valid calorie limit is provided)
+    if calorie_limit.isdigit():  # Ensure it is a number
         calorie_limit = int(calorie_limit)
         products = products.filter(calories__lte=calorie_limit).order_by('-calories')
+    else:
+        calorie_limit = None  # Set to None if empty
 
     # Get unique types for the products
     types = Type.objects.filter(id__in=products.values_list('type', flat=True))
 
-    # Algorithm to pre-select products that add up to calorie_limit
+    # 🔹 Algorithm to pre-select products that add up to calorie_limit (if set)
     selected_products = []
     total_calories = 0
 
-    for product in products:
-        if total_calories + product.calories <= calorie_limit:
-            selected_products.append(product.id)
-            total_calories += product.calories
+    if calorie_limit:  # Only apply pre-selection if calorie limit exists
+        for product in products:
+            if total_calories + product.calories <= calorie_limit:
+                selected_products.append(product.id)
+                total_calories += product.calories
 
     return render(request, 'shop/filtered_products.html', {
         'products': products,
