@@ -9,3 +9,4 @@ venv.bak/
 __pycache__/
 *.pyc
 db.sqlite3
+firebase_config.json
